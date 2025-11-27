@@ -1,0 +1,38 @@
+# FROM nvidia/cuda:13.0.1-cudnn-devel-ubuntu24.04
+FROM ubuntu:24.04
+
+# Install CUDA and cuDNN
+ADD https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb /root/packages/
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt update && \
+    apt -y install ca-certificates && \
+    dpkg -i /root/packages/cuda-keyring_1.1-1_all.deb && \
+    apt update && apt -y install cuda-toolkit-12-9 cudnn9-cuda-12
+ENV PATH="/usr/local/cuda/bin:${PATH}" \
+    LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH}"
+
+# Install NVSHMEM
+ADD https://developer.download.nvidia.com/compute/redist/nvshmem/3.3.20/builds/cuda12/txz/agnostic/x64/libnvshmem-linux-x86_64-3.3.20_cuda12-archive.tar.xz /root/packages/
+RUN tar -xvf /root/packages/libnvshmem-linux-x86_64-3.3.20_cuda12-archive.tar.xz -h --strip-components 1 -C /usr/local/cuda
+
+# Install and configure packages from apt
+ARG KERNEL_RELEASE
+ARG PERF_PACKAGES="linux-tools-common linux-tools-generic linux-tools-${KERNEL_RELEASE} linux-tools-nvidia-64k"
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt update && \
+    apt -y install clang && \
+    apt -y install gcc-14 g++-14 && \
+    apt -y install git mold ccache libssl-dev && \
+    apt -y install ${PERF_PACKAGES} && \
+    git config --global safe.directory '*'
+
+# Install uv and python
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+RUN uv python install 3.12
+ENV UV_LINK_MODE=copy                            \
+    UV_PYTHON_DOWNLOADS=never                    \
+    UV_CACHE_DIR=/root/pytorch/cache/uv
+
+# Improve development experience
+ENV TORCH_SHOW_CPP_STACKTRACES=1   \
+    TORCH_DISABLE_ADDR2LINE=1
