@@ -1,4 +1,4 @@
-FROM nvidia/cuda:13.0.1-cudnn-devel-ubuntu24.04
+FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04
 # FROM ubuntu:24.04
 # 
 # # Install CUDA and cuDNN
@@ -28,7 +28,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
 
 # Install uv and python
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-RUN uv python install 3.12
+RUN uv python install 3.13
 ENV UV_LINK_MODE=copy                            \
     UV_PYTHON_DOWNLOADS=never                    \
     UV_CACHE_DIR=/root/pytorch/cache/uv
