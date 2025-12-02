@@ -19,6 +19,11 @@ info:
 git:
 	git -C $(WORKTREE_MAIN) worktree repair $(CURDIR)
 
+.PHONY: setup
+setup: 1
+1:
+	git clone --recursive https://github.com/pytorch/pytorch $@
+
 .PHONY: torchdev
 torchdev: Dockerfile
 	docker build --tag torchdev --build-arg KERNEL_RELEASE=$(shell uname -r) $(MAKEFILE_ROOT)
