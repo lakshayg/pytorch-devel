@@ -1,0 +1,8 @@
+# ignore everything
+/*
+
+# but not these files
+!.gitignore
+!Dockerfile
+!Makefile
+!README.md
