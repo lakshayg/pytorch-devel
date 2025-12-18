@@ -15,17 +15,6 @@ FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04
 # ADD https://developer.download.nvidia.com/compute/redist/nvshmem/3.3.20/builds/cuda12/txz/agnostic/x64/libnvshmem-linux-x86_64-3.3.20_cuda12-archive.tar.xz /root/packages/
 # RUN tar -xvf /root/packages/libnvshmem-linux-x86_64-3.3.20_cuda12-archive.tar.xz -h --strip-components 1 -C /usr/local/cuda
 
-# Install and configure packages from apt
-ARG KERNEL_RELEASE
-ARG PERF_PACKAGES="linux-tools-common linux-tools-generic linux-tools-${KERNEL_RELEASE} linux-tools-nvidia-64k"
-RUN DEBIAN_FRONTEND=noninteractive \
-    apt update && \
-    apt -y install clang && \
-    apt -y install gcc-14 g++-14 && \
-    apt -y install git mold ccache libssl-dev && \
-    apt -y install ${PERF_PACKAGES} && \
-    git config --global safe.directory '*'
-
 # Install uv and python
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 RUN uv python install 3.13
@@ -33,6 +22,11 @@ ENV UV_LINK_MODE=copy                            \
     UV_PYTHON_DOWNLOADS=never                    \
     UV_CACHE_DIR=/root/pytorch/cache/uv
 
-# Improve development experience
-ENV TORCH_SHOW_CPP_STACKTRACES=1   \
-    TORCH_DISABLE_ADDR2LINE=1
+# Install and configure packages from apt
+ARG KERNEL_RELEASE
+ARG PERF_PACKAGES="linux-tools-common linux-tools-generic linux-tools-${KERNEL_RELEASE} linux-tools-nvidia-64k"
+RUN DEBIAN_FRONTEND=noninteractive apt update && \
+    apt -y install clang gcc-14 g++-14 && \
+    apt -y install git mold ccache libssl-dev && \
+    apt -y install ${PERF_PACKAGES} && \
+    git config --global safe.directory '*'

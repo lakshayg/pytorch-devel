@@ -37,11 +37,14 @@ start:
 
 #===================================================================================
 
+export CC:=gcc-14
+export CXX:=g++-14
+export CXXFLAGS:=-Wfatal-errors
+
 export CMAKE_SUPPRESS_DEVELOPER_WARNINGS:=ON
 export CMAKE_POLICY_VERSION_MINIMUM:=3.5
-export CMAKE_BUILD_TYPE:=RelWithDebInfo
-export CXXFLAGS:=-Wfatal-errors
 export CMAKE_CUDA_HOST_COMPILER:=$(CC)
+export CMAKE_BUILD_TYPE:=RelWithDebInfo
 # export CMAKE_COMPILE_WARNING_AS_ERROR:=ON
 # Keep all intermediate files generated during cuda compilation
 # export CMAKE_CUDA_FLAGS:=--keep
@@ -50,23 +53,33 @@ export CMAKE_LINKER_TYPE:=MOLD
 endif
 
 # PyTorch vars
-COMPUTE_CAPS:=$(shell nvidia-smi --query-gpu=compute_cap --format=csv,noheader | sort | uniq)
-export TORCH_CUDA_ARCH_LIST:=$(subst $() $(),;,$(COMPUTE_CAPS))
-export USE_PRECOMPILED_HEADERS:=0
-export USE_XCCL:=OFF
-export USE_NUMA:=OFF
-export USE_DISTRIBUTED:=1
+export USE_NUMA:=0
+export USE_XCCL:=0
 export USE_MKLDNN:=0
-# flash-attention is very expensive to build
+export USE_FBGEMM:=0
+export USE_NNPACK:=0
+export USE_QNNPACK:=0
+export USE_XNNPACK:=0
+export USE_DISTRIBUTED:=0
 export USE_FLASH_ATTENTION:=0
-export BUILD_TEST:=1
-export BUILD_BINARY:=1
-export BUILD_FUNCTORCH:=ON
-# export DEBUG:=1
-# export VERBOSE:=1
+export USE_MEM_EFF_ATTENTION:=0
+export USE_PRECOMPILED_HEADERS:=0
 ifeq ($(ARCH),aarch64)
 export USE_PRIORITIZED_TEXT_FOR_LD:=1
 endif
+
+export BUILD_TEST:=0
+export BUILD_BINARY:=0
+export BUILD_FUNCTORCH:=0
+# export DEBUG:=1
+# export VERBOSE:=1
+
+COMPUTE_CAPS:=$(shell nvidia-smi --query-gpu=compute_cap --format=csv,noheader | sort | uniq)
+export TORCH_CUDA_ARCH_LIST:=$(subst $() $(),;,$(COMPUTE_CAPS))
+export TORCH_SHOW_CPP_STACKTRACES:=1
+export TORCH_SYMBOLIZE_MODE:=fast
+# export TORCH_SYMBOLIZE_MODE:=dladdr
+# export TORCH_SYMBOLIZE_MODE:=addr2line
 
 # Ccache
 export CCACHE_DIR        := $(MAKEFILE_ROOT)/cache/ccache
