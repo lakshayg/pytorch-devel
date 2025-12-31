@@ -26,7 +26,7 @@ ENV UV_LINK_MODE=copy                            \
 ARG KERNEL_RELEASE
 ARG PERF_PACKAGES="linux-tools-common linux-tools-generic linux-tools-${KERNEL_RELEASE} linux-tools-nvidia-64k"
 RUN DEBIAN_FRONTEND=noninteractive apt update && \
-    apt -y install clang gcc-14 g++-14 && \
+    apt -y install clang gcc-14 g++-14 gdb && \
     apt -y install git mold ccache libssl-dev && \
     apt -y install ${PERF_PACKAGES} && \
     git config --global safe.directory '*'
