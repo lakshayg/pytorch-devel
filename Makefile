@@ -53,25 +53,25 @@ export CMAKE_LINKER_TYPE:=MOLD
 endif
 
 # PyTorch vars
-export USE_NUMA:=0
-export USE_XCCL:=0
-export USE_MKLDNN:=0
-export USE_FBGEMM:=0
-export USE_NNPACK:=0
-export USE_QNNPACK:=0
-export USE_XNNPACK:=0
-export USE_DISTRIBUTED:=0
-export USE_FBGEMM_GENAI:=0
-export USE_FLASH_ATTENTION:=0
-export USE_MEM_EFF_ATTENTION:=0
-export USE_PRECOMPILED_HEADERS:=0
+export USE_NUMA?=0
+export USE_XCCL?=0
+export USE_MKLDNN?=0
+export USE_FBGEMM?=0
+export USE_NNPACK?=0
+export USE_QNNPACK?=0
+export USE_XNNPACK?=0
+export USE_DISTRIBUTED?=0
+export USE_FBGEMM_GENAI?=0
+export USE_FLASH_ATTENTION?=0
+export USE_MEM_EFF_ATTENTION?=0
+export USE_PRECOMPILED_HEADERS?=0
 ifeq ($(ARCH),aarch64)
-export USE_PRIORITIZED_TEXT_FOR_LD:=1
+export USE_PRIORITIZED_TEXT_FOR_LD?=1
 endif
 
-export BUILD_TEST:=0
-export BUILD_BINARY:=0
-export BUILD_FUNCTORCH:=0
+export BUILD_TEST?=0
+export BUILD_BINARY?=0
+export BUILD_FUNCTORCH?=0
 # export DEBUG:=1
 # export VERBOSE:=1
 
@@ -90,6 +90,9 @@ export CCACHE_NOHASHDIR  := 1
 export CCACHE_BASEDIR    := $(CURDIR)
 export CCACHE_SLOPPINESS := pch_defines,time_macros
 # export CCACHE_DEBUG      := 1
+
+# uv
+export UV_PYTHON_DOWNLOADS := never
 
 # Runtime configuration
 # export MAX_JOBS ?= $(shell nproc)

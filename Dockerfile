@@ -1,6 +1,7 @@
-FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04
+FROM nvcr.io/nvidia/cuda-dl-base:25.12-cuda13.1-devel-ubuntu24.04
+# FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04
 # FROM ubuntu:24.04
-# 
+#
 # # Install CUDA and cuDNN
 # ADD https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb /root/packages/
 # RUN DEBIAN_FRONTEND=noninteractive \
@@ -10,7 +11,7 @@ FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04
 #     apt update && apt -y install cuda-toolkit-12-9 cudnn9-cuda-12
 # ENV PATH="/usr/local/cuda/bin:${PATH}" \
 #     LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH}"
-# 
+#
 # # Install NVSHMEM
 # ADD https://developer.download.nvidia.com/compute/redist/nvshmem/3.3.20/builds/cuda12/txz/agnostic/x64/libnvshmem-linux-x86_64-3.3.20_cuda12-archive.tar.xz /root/packages/
 # RUN tar -xvf /root/packages/libnvshmem-linux-x86_64-3.3.20_cuda12-archive.tar.xz -h --strip-components 1 -C /usr/local/cuda
@@ -19,7 +20,6 @@ FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 RUN uv python install 3.13
 ENV UV_LINK_MODE=copy                            \
-    UV_PYTHON_DOWNLOADS=never                    \
     UV_CACHE_DIR=/root/pytorch/cache/uv
 
 # Install and configure packages from apt
