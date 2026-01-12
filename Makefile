@@ -26,14 +26,14 @@ setup: 1
 
 .PHONY: torchdev
 torchdev: Dockerfile
-	docker build --tag torchdev --build-arg KERNEL_RELEASE=$(shell uname -r) $(MAKEFILE_ROOT)
+	docker build --tag torchdev --build-arg KERNEL_RELEASE=$(shell uname -r) --build-arg HOST_CODENAME=$(shell lsb_release -cs) $(MAKEFILE_ROOT)
 
 .PHONY: start
 RUNNING_CONTAINER=$(shell docker ps --filter 'ancestor=torchdev' --format '{{.Names}}')
 start:
 	$(if $(RUNNING_CONTAINER), \
 		docker exec --workdir $(CONTAINER_CURDIR) -it $(RUNNING_CONTAINER) bash, \
-		docker run --rm --gpus all -it --mount type=bind,src=$(MAKEFILE_ROOT),dst=$(CONTAINER_ROOT) --workdir $(CONTAINER_CURDIR) torchdev)
+		docker run --privileged --rm --gpus all -it --mount type=bind,src=$(MAKEFILE_ROOT),dst=$(CONTAINER_ROOT) --workdir $(CONTAINER_CURDIR) torchdev)
 
 #===================================================================================
 

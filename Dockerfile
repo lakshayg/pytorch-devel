@@ -1,3 +1,6 @@
+FROM rust AS builder
+RUN cargo install flamegraph
+
 FROM nvcr.io/nvidia/cuda-dl-base:25.12-cuda13.1-devel-ubuntu24.04
 # FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04
 # FROM ubuntu:24.04
@@ -23,10 +26,18 @@ ENV UV_LINK_MODE=copy                            \
     UV_CACHE_DIR=/root/pytorch/cache/uv
 
 # Install and configure packages from apt
-ARG KERNEL_RELEASE
-ARG PERF_PACKAGES="linux-tools-common linux-tools-generic linux-tools-${KERNEL_RELEASE} linux-tools-nvidia-64k"
 RUN DEBIAN_FRONTEND=noninteractive apt update && \
-    apt -y install clang gcc-14 g++-14 gdb && \
+    apt -y install clang lldb gcc-14 g++-14 gdb && \
     apt -y install git mold ccache libssl-dev && \
-    apt -y install ${PERF_PACKAGES} && \
     git config --global safe.directory '*'
+
+# Install perf analysis tools
+ARG KERNEL_RELEASE
+ARG HOST_CODENAME
+ARG PERF_REPO="deb http://archive.ubuntu.com/ubuntu ${HOST_CODENAME}-updates main"
+ARG PERF_PACKAGES="linux-tools-common linux-tools-${KERNEL_RELEASE}"
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt -y install software-properties-common && \
+    add-apt-repository ${PERF_REPO} && \
+    apt -y install ${PERF_PACKAGES}
+COPY --from=builder /usr/local/cargo/bin/flamegraph /bin/
