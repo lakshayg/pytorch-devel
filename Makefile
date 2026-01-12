@@ -26,7 +26,7 @@ setup: 1
 
 .PHONY: torchdev
 torchdev: Dockerfile
-	docker build --tag torchdev --build-arg KERNEL_RELEASE=$(shell uname -r) --build-arg HOST_CODENAME=$(shell lsb_release -cs) $(MAKEFILE_ROOT)
+	docker build --tag torchdev $(MAKEFILE_ROOT)
 
 .PHONY: start
 RUNNING_CONTAINER=$(shell docker ps --filter 'ancestor=torchdev' --format '{{.Names}}')

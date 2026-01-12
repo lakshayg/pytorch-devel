@@ -1,5 +1,9 @@
 FROM rust AS builder
-RUN cargo install flamegraph
+RUN DEBIAN_FRONTEND=noninteractive apt update && \
+    apt install -y flex bison && \
+    git clone --depth 1 https://github.com/torvalds/linux && \
+    NO_LIBELF=1 NO_JEVENTS=1 NO_LIBTRACEEVENT=1 make -C linux/tools/perf && \
+    cargo install flamegraph
 
 FROM nvcr.io/nvidia/cuda-dl-base:25.12-cuda13.1-devel-ubuntu24.04
 # FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04
@@ -32,12 +36,4 @@ RUN DEBIAN_FRONTEND=noninteractive apt update && \
     git config --global safe.directory '*'
 
 # Install perf analysis tools
-ARG KERNEL_RELEASE
-ARG HOST_CODENAME
-ARG PERF_REPO="deb http://archive.ubuntu.com/ubuntu ${HOST_CODENAME}-updates main"
-ARG PERF_PACKAGES="linux-tools-common linux-tools-${KERNEL_RELEASE}"
-RUN DEBIAN_FRONTEND=noninteractive \
-    apt -y install software-properties-common && \
-    add-apt-repository ${PERF_REPO} && \
-    apt -y install ${PERF_PACKAGES}
-COPY --from=builder /usr/local/cargo/bin/flamegraph /bin/
+COPY --from=builder /linux/tools/perf/perf /usr/local/cargo/bin/flamegraph /bin/
