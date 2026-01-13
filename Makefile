@@ -1,3 +1,5 @@
+#!/usr/bin/env -S make -f
+
 MAKEFILE_ROOT    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 RELATIVE_CURDIR  := $(shell realpath --relative-to $(MAKEFILE_ROOT) $(CURDIR))
 CONTAINER_ROOT   := /root/pytorch
@@ -20,9 +22,8 @@ git:
 	git -C $(WORKTREE_MAIN) worktree repair $(CURDIR)
 
 .PHONY: setup
-setup: 1
-1:
-	git clone --recursive https://github.com/pytorch/pytorch $@
+setup:
+	git clone --recursive https://github.com/pytorch/pytorch 1
 
 .PHONY: torchdev
 torchdev: Dockerfile
