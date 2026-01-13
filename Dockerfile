@@ -1,7 +1,6 @@
 FROM rust AS builder
 RUN DEBIAN_FRONTEND=noninteractive apt update && apt install -y flex bison && \
-    git clone --no-checkout --single-branch --depth 1 --filter=tree:0 https://github.com/torvalds/linux && \
-    git -C linux sparse-checkout set --no-cone /tools /include /arch && git -C linux checkout && \
+    git clone --single-branch --depth 1 https://github.com/torvalds/linux && \
     NO_LIBELF=1 NO_JEVENTS=1 NO_LIBTRACEEVENT=1 make -C linux/tools/perf && \
     cargo install flamegraph
 
