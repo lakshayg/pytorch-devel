@@ -114,3 +114,7 @@ lint: git
 .PHONY: clean
 clean:
 	rm -rf .venv/ build/
+
+.PHONY: python
+python:
+	uv run python
