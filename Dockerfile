@@ -1,8 +1,6 @@
 FROM rust AS builder
-RUN DEBIAN_FRONTEND=noninteractive apt update && apt install -y flex bison && \
-    git clone --single-branch --depth 1 https://github.com/torvalds/linux && \
-    NO_LIBELF=1 NO_JEVENTS=1 NO_LIBTRACEEVENT=1 make -C linux/tools/perf && \
-    cargo install flamegraph
+RUN cargo install flamegraph && \
+    cargo install addr2line --features="bin"
 
 FROM nvcr.io/nvidia/cuda-dl-base:25.12-cuda13.1-devel-ubuntu24.04
 ENV EDITOR=vim
@@ -20,4 +18,13 @@ RUN DEBIAN_FRONTEND=noninteractive apt update && \
     git config --global safe.directory '*'
 
 # Install perf analysis tools
-COPY --from=builder /linux/tools/perf/perf /usr/local/cargo/bin/flamegraph /bin/
+ARG PERF_BUILD_DEPS="flex bison"
+ARG PERF_RUNTIME_DEPS="libnuma-dev libcapstone-dev libdw-dev \
+    libelf-dev libpfm4-dev libslang2-dev systemtap-sdt-dev   \
+    libtraceevent-dev libdebuginfod-dev libbabeltrace-dev    "
+RUN apt -y install ${PERF_BUILD_DEPS} ${PERF_RUNTIME_DEPS} && \
+    git clone --single-branch --depth 1 https://github.com/torvalds/linux && \
+    NO_JEVENTS=1 make -C linux/tools/perf && cp linux/tools/perf/perf /bin/ && \
+    rm -rf linux && apt remove -y ${PERF_BUILD_DEPS}
+COPY --from=builder /usr/local/cargo/bin/flamegraph /bin/
+COPY --from=builder /usr/local/cargo/bin/addr2line  /usr/bin/
