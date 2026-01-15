@@ -37,6 +37,12 @@ start:
 		docker exec --workdir $(CONTAINER_CURDIR) -it $(RUNNING_CONTAINER) bash, \
 		docker run --privileged --rm --gpus all -it --mount type=bind,src=$(MAKEFILE_ROOT),dst=$(CONTAINER_ROOT) --workdir $(CONTAINER_CURDIR) $(DOCKER_IMAGE))
 
+.PHONY: edit
+edit:
+	$(if $(EDITOR), \
+		$(EDITOR) $(MAKEFILE_LIST), \
+        $(error EDITOR is not set))
+
 #===================================================================================
 
 export CC:=gcc-14

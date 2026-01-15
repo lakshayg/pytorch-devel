@@ -5,6 +5,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt update && apt install -y flex bison && \
     cargo install flamegraph
 
 FROM nvcr.io/nvidia/cuda-dl-base:25.12-cuda13.1-devel-ubuntu24.04
+ENV EDITOR=vim
 
 # Install uv and python
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
