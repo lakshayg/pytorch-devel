@@ -122,7 +122,7 @@ lint: git
 
 .PHONY: clean
 clean:
-	rm -rf .venv/ build/
+	git clean -fdx -e tags
 
 .PHONY: python
 python:
