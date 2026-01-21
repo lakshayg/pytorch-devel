@@ -101,6 +101,9 @@ export CCACHE_SLOPPINESS := pch_defines,time_macros
 # uv
 export UV_PYTHON_DOWNLOADS := never
 
+# CUDA Runtime
+export CUDA_BINARY_LOADER_THREAD_COUNT?=8
+
 # Runtime configuration
 # export MAX_JOBS ?= $(shell nproc)
 # export CMAKE_FRESH:=1
