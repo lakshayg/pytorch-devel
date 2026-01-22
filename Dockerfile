@@ -13,7 +13,7 @@ ENV UV_LINK_MODE=copy                            \
 
 # Install and configure packages from apt
 RUN DEBIAN_FRONTEND=noninteractive apt update && \
-    apt -y install clang lldb gcc-14 g++-14 gdb && \
+    apt -y install clang-20 lldb-20 gcc-14 g++-14 gdb && \
     apt -y install git mold ccache libssl-dev && \
     git config --global safe.directory '*'
 

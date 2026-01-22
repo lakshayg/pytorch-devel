@@ -5,6 +5,7 @@ RELATIVE_CURDIR  := $(shell realpath --relative-to $(MAKEFILE_ROOT) $(CURDIR))
 CONTAINER_ROOT   := /root/pytorch
 CONTAINER_CURDIR := $(CONTAINER_ROOT)/$(RELATIVE_CURDIR)
 WORKTREE_MAIN    := $(MAKEFILE_ROOT)/1
+WORKTREE_VALID   := $(shell git rev-parse --is-inside-work-tree 2>/dev/null)
 ARCH             := $(shell arch)
 DOCKER_IMAGE     ?= torchdev
 
@@ -12,15 +13,15 @@ DOCKER_IMAGE     ?= torchdev
 
 .PHONY: info
 info:
-	$(info This is Lakshay's PyTorch Recipe File)
-	$(info =====================================)
-	$(info TORCH_CUDA_ARCH_LIST=$(TORCH_CUDA_ARCH_LIST))
-	$(info ARCH=$(ARCH))
-	$(info =====================================)
+	@echo $(realpath $(MAKEFILE_LIST))
+	@echo "ARCH="$(ARCH)
+	@env | grep TORCH_CUDA_ARCH_LIST
 
 .PHONY: git
 git:
+ifneq ($(WORKTREE_VALID),true)
 	git -C $(WORKTREE_MAIN) worktree repair $(CURDIR)
+endif
 
 .PHONY: setup
 setup:
@@ -35,13 +36,13 @@ RUNNING_CONTAINER=$(shell docker ps --filter 'ancestor=torchdev' --format '{{.Na
 start:
 	$(if $(RUNNING_CONTAINER), \
 		docker exec --workdir $(CONTAINER_CURDIR) -it $(RUNNING_CONTAINER) bash, \
-		docker run --privileged --rm --gpus all -it --mount type=bind,src=$(MAKEFILE_ROOT),dst=$(CONTAINER_ROOT) --workdir $(CONTAINER_CURDIR) $(DOCKER_IMAGE))
+		docker run --privileged --rm -it --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 --mount type=bind,src=$(MAKEFILE_ROOT),dst=$(CONTAINER_ROOT) --workdir $(CONTAINER_CURDIR) $(DOCKER_IMAGE))
 
 .PHONY: edit
 edit:
 	$(if $(EDITOR), \
 		$(EDITOR) $(MAKEFILE_LIST), \
-        $(error EDITOR is not set))
+		$(error EDITOR is not set))
 
 #===================================================================================
 
@@ -82,8 +83,7 @@ export BUILD_FUNCTORCH?=0
 # export DEBUG:=1
 # export VERBOSE:=1
 
-COMPUTE_CAPS:=$(shell nvidia-smi --query-gpu=compute_cap --format=csv,noheader | sort | uniq)
-export TORCH_CUDA_ARCH_LIST?=$(subst $() $(),;,$(COMPUTE_CAPS))
+export TORCH_CUDA_ARCH_LIST?=$(shell nvidia-smi --query-gpu=compute_cap --format=csv,noheader | sort -uV | xargs | tr [:blank:] ,)
 export TORCH_SHOW_CPP_STACKTRACES?=1
 export TORCH_SYMBOLIZE_MODE?=fast
 # export TORCH_SYMBOLIZE_MODE:=dladdr
@@ -102,7 +102,9 @@ export CCACHE_SLOPPINESS := pch_defines,time_macros
 export UV_PYTHON_DOWNLOADS := never
 
 # CUDA Runtime
-export CUDA_BINARY_LOADER_THREAD_COUNT?=8
+# export CUDA_BINARY_LOADER_THREAD_COUNT?=8
+# export CUDA_MODULE_LOADING?=LAZY
+# export CUDA_CACHE_DISABLE?=0
 
 # Runtime configuration
 # export MAX_JOBS ?= $(shell nproc)
@@ -121,9 +123,9 @@ lint: git
 	uv run --only-dev lintrunner lint --apply-patches
 
 .PHONY: clean
-clean:
+clean: git
 	git clean -fdx -e tags
 
 .PHONY: python
 python:
-	uv run python
+	uv run --with ipython ipython -i -c "import torch"
