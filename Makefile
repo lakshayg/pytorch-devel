@@ -1,11 +1,10 @@
-#!/usr/bin/env -S make -f
+#!/usr/bin/env -S make --no-builtin-rules --makefile
 
 MAKEFILE_ROOT    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 RELATIVE_CURDIR  := $(shell realpath --relative-to $(MAKEFILE_ROOT) $(CURDIR))
 CONTAINER_ROOT   := /root/pytorch
 CONTAINER_CURDIR := $(CONTAINER_ROOT)/$(RELATIVE_CURDIR)
 WORKTREE_MAIN    := $(MAKEFILE_ROOT)/1
-WORKTREE_VALID   := $(shell git rev-parse --is-inside-work-tree 2>/dev/null)
 ARCH             := $(shell arch)
 DOCKER_IMAGE     ?= torchdev
 
@@ -19,9 +18,8 @@ info:
 
 .PHONY: git
 git:
-ifneq ($(WORKTREE_VALID),true)
-	git -C $(WORKTREE_MAIN) worktree repair $(CURDIR)
-endif
+	$(if $(shell git rev-parse --is-inside-work-tree 2>/dev/null),,\
+		git -C $(WORKTREE_MAIN) worktree repair $(CURDIR))
 
 .PHONY: setup
 setup:
