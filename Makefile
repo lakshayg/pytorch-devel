@@ -32,11 +32,10 @@ torchdev: torchdev/Dockerfile
 	docker build --tag $@ $@
 
 .PHONY: start
-RUNNING_CONTAINER=$(shell docker ps --filter 'ancestor=torchdev' --format '{{.Names}}')
 start:
-	$(if $(RUNNING_CONTAINER), \
-		docker exec --workdir $(CONTAINER_CURDIR) -it $(RUNNING_CONTAINER) bash, \
-		docker run --privileged --rm -it --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 --mount type=bind,src=$(MAKEFILE_ROOT),dst=$(CONTAINER_ROOT) --workdir $(CONTAINER_CURDIR) $(DOCKER_IMAGE))
+	$(or $(foreach _running_container,$(shell docker ps --filter 'ancestor=torchdev' --format '{{.Names}}'), \
+		docker exec --workdir $(CONTAINER_CURDIR) -it $(_running_container) bash),                           \
+		docker run --privileged --rm -it --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 --volume $(MAKEFILE_ROOT):$(CONTAINER_ROOT) --workdir $(CONTAINER_CURDIR) $(DOCKER_IMAGE))
 
 .PHONY: edit
 edit:
