@@ -7,14 +7,11 @@ RELATIVE_CURDIR  := $(shell realpath --relative-to $(MAKEFILE_ROOT) $(CURDIR))
 CONTAINER_ROOT   := /root/pytorch
 CONTAINER_CURDIR := $(CONTAINER_ROOT)/$(RELATIVE_CURDIR)
 WORKTREE_MAIN    := $(MAKEFILE_ROOT)/1
-ARCH             := $(shell arch)
 DOCKER_IMAGE     ?= torchdev
 
 .PHONY: info
 info:
 	@echo $(realpath $(MAKEFILE_LIST))
-	@echo "ARCH="$(ARCH)
-	@env | grep TORCH_CUDA_ARCH_LIST
 
 .PHONY: git
 git:
@@ -91,7 +88,7 @@ build-%: git
 	ccache --show-stats
 
 .PHONY: build
-build: build-$(ARCH)
+build: build-$(shell arch)
 
 .PHONY: lint
 lint: git
