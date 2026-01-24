@@ -2,41 +2,39 @@
 
 #===================================================================================
 
-MAKEFILE_ROOT    := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
-RELATIVE_CURDIR  := $(shell realpath --relative-to $(MAKEFILE_ROOT) $(CURDIR))
-CONTAINER_ROOT   := /root/pytorch
-CONTAINER_CURDIR := $(CONTAINER_ROOT)/$(RELATIVE_CURDIR)
-WORKTREE_MAIN    := $(MAKEFILE_ROOT)/1
-DOCKER_IMAGE     ?= torchdev
+MAKEFILE_ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 
 .PHONY: info
 info:
 	@echo $(realpath $(MAKEFILE_LIST))
 
 .PHONY: git
+git: WORKTREE_MAIN := $(MAKEFILE_ROOT)/1
 git:
-	$(if $(shell git rev-parse --is-inside-work-tree 2>/dev/null),,\
-		git -C $(WORKTREE_MAIN) worktree repair $(CURDIR))
+	git rev-parse --is-inside-work-tree 2>&1 >/dev/null || git -C $(WORKTREE_MAIN) worktree repair $(CURDIR)
 
 .PHONY: setup
 setup:
 	git clone --recursive https://github.com/pytorch/pytorch 1
 
 .PHONY: torchdev
-torchdev: $(MAKEFILE_ROOT)/torchdev/Dockerfile
-	docker build --tag $@ $(dir $<)
+torchdev: torchdev/Dockerfile
+	docker build --tag $@ $@
 
 .PHONY: start
+start: CONTAINER_ROOT   := /root/pytorch
+start: RELATIVE_CURDIR  := $(shell realpath --relative-to $(MAKEFILE_ROOT) $(CURDIR))
+start: CONTAINER_CURDIR := $(CONTAINER_ROOT)/$(RELATIVE_CURDIR)
+start: DOCKER_IMAGE     ?= torchdev
+start: DOCKER_CONTAINER := docker_$(firstword $(shell echo -n "$(DOCKER_IMAGE)" | md5sum))
 start:
-	$(or $(foreach _running_container,$(shell docker ps --filter 'ancestor=torchdev' --format '{{.Names}}'), \
-		docker exec --workdir $(CONTAINER_CURDIR) -it $(_running_container) bash),                           \
-		docker run --privileged --rm -it --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 --volume $(MAKEFILE_ROOT):$(CONTAINER_ROOT) --workdir $(CONTAINER_CURDIR) $(DOCKER_IMAGE))
+	docker exec --workdir $(CONTAINER_CURDIR) -it $(DOCKER_CONTAINER) bash 2>/dev/null || \
+	docker run --privileged --rm -it --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 --volume $(MAKEFILE_ROOT):$(CONTAINER_ROOT) --workdir $(CONTAINER_CURDIR) --name $(DOCKER_CONTAINER) $(DOCKER_IMAGE)
 
 .PHONY: edit
+edit: EDITOR ?= vim
 edit:
-	$(if $(EDITOR), \
-		$(EDITOR) $(MAKEFILE_LIST), \
-		$(error EDITOR is not set))
+	$(EDITOR) $(MAKEFILE_LIST)
 
 #===================================================================================
 
