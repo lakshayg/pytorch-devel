@@ -56,7 +56,6 @@ build-%: export CMAKE_SUPPRESS_DEVELOPER_WARNINGS:=ON
 build-%: export CMAKE_POLICY_VERSION_MINIMUM:=3.5
 build-%: export CMAKE_CUDA_HOST_COMPILER:=$(CC)
 build-%: export CMAKE_BUILD_TYPE?=RelWithDebInfo
-build-%: export CMAKE_LINKER_TYPE:=MOLD
 # build-%: export CMAKE_COMPILE_WARNING_AS_ERROR:=ON
 # Keep all intermediate files generated during cuda compilation
 # build-%: export CMAKE_CUDA_FLAGS:=--keep
@@ -78,6 +77,7 @@ build-%: export BUILD_BINARY?=0
 build-%: export BUILD_FUNCTORCH?=0
 
 build-aarch64: export USE_PRIORITIZED_TEXT_FOR_LD?=1
+build-x86_64:  export CMAKE_LINKER_TYPE:=MOLD
 
 build-%: git
 	ccache --zero-stats
