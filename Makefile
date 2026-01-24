@@ -23,8 +23,8 @@ setup:
 	git clone --recursive https://github.com/pytorch/pytorch 1
 
 .PHONY: torchdev
-torchdev: torchdev/Dockerfile
-	docker build --tag $@ $@
+torchdev: $(MAKEFILE_ROOT)/torchdev/Dockerfile
+	docker build --tag $@ $(dir $<)
 
 .PHONY: start
 start:
