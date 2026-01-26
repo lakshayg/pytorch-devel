@@ -62,12 +62,12 @@ build-%: export CMAKE_BUILD_TYPE?=RelWithDebInfo
 
 build-%: export USE_NUMA?=0
 build-%: export USE_XCCL?=0
+build-%: export USE_MSLK?=0
 build-%: export USE_MKLDNN?=0
 build-%: export USE_FBGEMM?=0
 build-%: export USE_NNPACK?=0
 build-%: export USE_XNNPACK?=0
 build-%: export USE_DISTRIBUTED?=0
-build-%: export USE_FBGEMM_GENAI?=0
 build-%: export USE_FLASH_ATTENTION?=0
 build-%: export USE_MEM_EFF_ATTENTION?=0
 build-%: export USE_PRECOMPILED_HEADERS?=0
