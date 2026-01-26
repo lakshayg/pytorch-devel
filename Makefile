@@ -1,7 +1,5 @@
 #!/usr/bin/env -S make --no-builtin-rules --warn-undefined-variables --makefile
 
-#===================================================================================
-
 MAKEFILE_ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 
 .PHONY: info
@@ -107,7 +105,7 @@ shell python: export TORCH_SYMBOLIZE_MODE?=$(word 1, fast dladdr addr2line)
 # shell python: export CUDA_CACHE_DISABLE?=0
 
 shell:
-	@PS1="(pytorch) \w: " bash --norc -i
+	bash --rcfile $(CURDIR)/.venv/bin/activate -i
 
 python:
 	uv run --with ipython ipython -i -c "import torch"
