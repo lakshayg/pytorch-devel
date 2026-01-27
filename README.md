@@ -37,5 +37,6 @@ pytorch-devel
 |_ cache        #
    |_ ccache    #
    |_ uv        #
-
+   |_ .bash_history
+   |_ .torch_shell_history
 ```
