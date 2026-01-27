@@ -72,7 +72,7 @@ build-%: export USE_PRECOMPILED_HEADERS?=0
 build-%: export TORCH_CUDA_ARCH_LIST?=$(shell nvidia-smi --query-gpu=compute_cap --format=csv,noheader | sort -uV | xargs | tr [:blank:] ,)
 build-%: export BUILD_TEST?=0
 build-%: export BUILD_BINARY?=0
-build-%: export BUILD_FUNCTORCH?=0
+build-%: export BUILD_FUNCTORCH?=1
 
 build-aarch64: export USE_PRIORITIZED_TEXT_FOR_LD?=1
 build-x86_64:  export CMAKE_LINKER_TYPE:=MOLD
