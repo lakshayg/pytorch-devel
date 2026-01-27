@@ -1,6 +1,7 @@
 #!/usr/bin/env -S make --no-builtin-rules --warn-undefined-variables --makefile
 
-MAKEFILE_ROOT := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+CONTAINER_ROOT := /root/pytorch
+MAKEFILE_ROOT  := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 
 .PHONY: info
 info:
@@ -20,7 +21,6 @@ torchdev: torchdev/Dockerfile
 	docker build --tag $@ $@
 
 .PHONY: start
-start: CONTAINER_ROOT   := /root/pytorch
 start: RELATIVE_CURDIR  := $(shell realpath --relative-to $(MAKEFILE_ROOT) $(CURDIR))
 start: CONTAINER_CURDIR := $(CONTAINER_ROOT)/$(RELATIVE_CURDIR)
 start: DOCKER_IMAGE     ?= torchdev
@@ -104,6 +104,7 @@ shell python: export TORCH_SYMBOLIZE_MODE?=$(word 1, fast dladdr addr2line)
 # shell python: export CUDA_MODULE_LOADING?=$(word 1, LAZY EAGER)
 # shell python: export CUDA_CACHE_DISABLE?=0
 
+shell: export HISTFILE:=$(CONTAINER_ROOT)/cache/.torch_shell_history
 shell:
 	bash --rcfile $(CURDIR)/.venv/bin/activate -i
 

@@ -4,12 +4,13 @@ RUN cargo install flamegraph && \
 
 FROM nvcr.io/nvidia/cuda-dl-base:25.12-cuda13.1-devel-ubuntu24.04
 ENV EDITOR=vim
+ENV HISTFILE=/root/pytorch/cache/.bash_history
 
 # Install uv and python
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/bin/
 RUN uv python install 3.13
-ENV UV_LINK_MODE=copy                            \
-    UV_CACHE_DIR=/root/pytorch/cache/uv
+ENV UV_LINK_MODE=copy
+ENV UV_CACHE_DIR=/root/pytorch/cache/uv
 
 # Install and configure packages from apt
 ARG TORCH_BUILD_DEPS="git ccache libssl-dev \
