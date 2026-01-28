@@ -14,7 +14,8 @@ ENV UV_CACHE_DIR=/root/pytorch/cache/uv
 
 # Install and configure packages from apt
 ARG TORCH_BUILD_DEPS="git ccache libssl-dev \
-    mold clang-20 lldb-20 gcc-14 g++-14 gdb "
+    mold clang-20 lldb-20 gcc-14 g++-14 gdb \
+    libopenblas-dev"
 RUN DEBIAN_FRONTEND=noninteractive apt-get update &&  \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
       --no-install-recommends ${TORCH_BUILD_DEPS} &&  \
