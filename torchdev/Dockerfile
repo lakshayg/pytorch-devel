@@ -13,13 +13,17 @@ ENV UV_LINK_MODE=copy
 ENV UV_CACHE_DIR=/root/pytorch/cache/uv
 
 # Install and configure packages from apt
-ARG TORCH_BUILD_DEPS="git ccache libssl-dev \
-    mold clang-20 lldb-20 gcc-14 g++-14 gdb \
-    libopenblas-dev"
+ARG TORCH_BUILD_DEPS="git gdb gcc-14 g++-14 \
+    mold ccache libssl-dev libopenblas-dev"
 RUN DEBIAN_FRONTEND=noninteractive apt-get update &&  \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
       --no-install-recommends ${TORCH_BUILD_DEPS} &&  \
     git config --global safe.directory '*'
+
+RUN apt-get install -y clang-20 && update-alternatives \
+        --install /usr/bin/clang   clang   $(which clang-20) 1 \
+        --slave   /usr/bin/clang++ clang++ $(which clang++-20) \
+        --slave   /usr/bin/lldb    lldb    $(which lldb-20)
 
 # Install perf analysis tools
 ARG LINUX_VER="6.18"
