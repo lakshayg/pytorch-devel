@@ -13,7 +13,9 @@ ARG PERF_RUNTIME_DEPS="libnuma-dev libcapstone-dev libdw-dev \
     libtraceevent-dev libdebuginfod-dev libbabeltrace-dev    "
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends ${PERF_BUILD_DEPS} ${PERF_RUNTIME_DEPS}
-RUN curl -fL ${LINUX_REMOTE_ARCHIVE} | tar xzf - && NO_JEVENTS=1 make -C ${LINUX_DIR}/tools/perf
+RUN curl -fL ${LINUX_REMOTE_ARCHIVE} | tar xzf - && \
+    NO_JEVENTS=1 make -C ${LINUX_DIR}/tools/perf && \
+    cp ${LINUX_DIR}/tools/perf/perf /usr/bin/perf
 
 FROM ${BASE_IMAGE}
 ENV EDITOR=vim
@@ -43,4 +45,4 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update &&                            
 
 COPY --from=rust-tools /usr/local/cargo/bin/flamegraph /usr/bin/
 COPY --from=rust-tools /usr/local/cargo/bin/addr2line  /usr/bin/
-COPY --from=perf-build ${LINUX_DIR}/tools/perf/perf    /usr/bin/
+COPY --from=perf-build /usr/bin/perf                   /usr/bin/
