@@ -21,12 +21,6 @@ FROM ${BASE_IMAGE}
 ENV EDITOR=vim
 ENV HISTFILE=/root/pytorch/cache/.bash_history
 
-# Install uv and python
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/bin/
-RUN uv python install 3.13
-ENV UV_LINK_MODE=copy
-ENV UV_CACHE_DIR=/root/pytorch/cache/uv
-
 ARG GCC_PKGS="gcc-14 g++-14 gdb"
 ARG CLANG_PKGS="clang-20 lldb-20"
 ARG TORCH_BUILD_DEPS="git mold ccache libssl-dev libopenblas-dev"
@@ -46,3 +40,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update &&                            
 COPY --from=rust-tools /usr/local/cargo/bin/flamegraph /usr/bin/
 COPY --from=rust-tools /usr/local/cargo/bin/addr2line  /usr/bin/
 COPY --from=perf-build /usr/bin/perf                   /usr/bin/
+COPY --from=ghcr.io/astral-sh/uv /uv /uvx              /usr/bin/
+RUN uv python install 3.13
+ENV UV_LINK_MODE=copy
+ENV UV_CACHE_DIR=/root/pytorch/cache/uv
