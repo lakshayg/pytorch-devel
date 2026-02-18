@@ -36,8 +36,8 @@ edit:
 
 #===================================================================================
 
-export CC:=gcc
-export CXX:=g++
+export CC:=clang
+export CXX:=clang++
 export CXXFLAGS:=-Wfatal-errors
 
 export CCACHE_DIR        := $(MAKEFILE_ROOT)/cache/ccache
@@ -71,7 +71,7 @@ build-%: export USE_MEM_EFF_ATTENTION?=0
 build-%: export USE_PRECOMPILED_HEADERS?=0
 build-%: export TORCH_CUDA_ARCH_LIST?=$(shell nvidia-smi --query-gpu=compute_cap --format=csv,noheader | sort -uV | xargs | tr [:blank:] ';')
 build-%: export BUILD_TEST?=0
-build-%: export BUILD_BINARY?=0
+build-%: export BUILD_BINARY?=1
 build-%: export BUILD_FUNCTORCH?=1
 
 build-aarch64: export USE_PRIORITIZED_TEXT_FOR_LD?=1
