@@ -36,8 +36,8 @@ edit:
 
 #===================================================================================
 
-export CC:=gcc
-export CXX:=g++
+export CC:=clang
+export CXX:=clang++
 export CXXFLAGS:=-Wfatal-errors
 
 export CCACHE_DIR        := $(MAKEFILE_ROOT)/cache/ccache
