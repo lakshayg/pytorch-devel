@@ -22,7 +22,7 @@ ENV EDITOR=vim
 ENV HISTFILE=/root/pytorch/cache/.bash_history
 
 ARG GCC_PKGS="gcc-14 g++-14 gdb"
-ARG CLANG_PKGS="clang-20 lldb-20 bolt-20"
+ARG CLANG_PKGS="clang-20 lldb-20 bolt-20 llvm-20"
 ARG TORCH_BUILD_DEPS="git mold ccache libssl-dev libopenblas-dev"
 RUN DEBIAN_FRONTEND=noninteractive apt-get update &&                                    \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends           \
@@ -35,7 +35,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update &&                            
                         --slave   /usr/bin/clang++   clang++   $(which clang++-20)      \
                         --slave   /usr/bin/lldb      lldb      $(which lldb-20)         \
                         --slave   /usr/bin/clang-cpp clang-cpp $(which clang-cpp-20)    \
-                        --slave   /usr/bin/llvm-bolt llvm-bolt $(which llvm-bolt-20) && \
+                        --slave   /usr/bin/llvm-bolt llvm-bolt $(which llvm-bolt-20)    \
+                        --slave   /usr/bin/llvm-nm   llvm-nm   $(which llvm-nm-20)   && \
     git config --global safe.directory '*'
 
 COPY --from=rust-tools /usr/local/cargo/bin/flamegraph /usr/bin/
