@@ -95,6 +95,11 @@ lint: git
 clean: git
 	git clean -fdx -e tags
 
+.PHONY: tags
+tags: TMPFILE:=$(shell mktemp --tmpdir rgconfig.XXXXXX)
+tags: git
+	git submodule -q foreach 'echo --glob=!/$$sm_path' > $(TMPFILE)
+	RIPGREP_CONFIG_PATH=$(TMPFILE) rg -tc -tcpp -tcuda --files | ctags -L -
 #===================================================================================
 
 .PHONY: shell python
