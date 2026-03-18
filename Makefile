@@ -97,8 +97,8 @@ clean: git
 
 .PHONY: tags
 tags: TMPFILE:=$(shell mktemp --tmpdir rgconfig.XXXXXX)
-tags: git
-	git submodule -q foreach 'echo --glob=!/$$sm_path' > $(TMPFILE)
+tags:
+	rg -N '^\s*\bpath\b\s*=\s*' --replace '--glob=!/' .gitmodules > $(TMPFILE)
 	RIPGREP_CONFIG_PATH=$(TMPFILE) rg -tc -tcpp -tcuda --files | ctags -L -
 #===================================================================================
 
