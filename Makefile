@@ -98,8 +98,8 @@ clean: git
 .PHONY: tags
 tags: TMPFILE:=$(shell mktemp --tmpdir rgconfig.XXXXXX)
 tags:
-	rg -N '^\s*\bpath\b\s*=\s*' --replace '--glob=!/' .gitmodules > $(TMPFILE)
-	RIPGREP_CONFIG_PATH=$(TMPFILE) rg -tc -tcpp -tcuda --files | ctags -L -
+	[ -f ".gitmodules" ] && rg -N '^\s*\bpath\b\s*=\s*' --replace '--glob=!/' .gitmodules > $(TMPFILE) || true
+	RIPGREP_CONFIG_PATH=$(TMPFILE) rg --no-ignore -tc -tcpp -tcuda --files | ctags -L -
 #===================================================================================
 
 .PHONY: shell python
