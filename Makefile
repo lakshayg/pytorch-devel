@@ -1,6 +1,6 @@
 #!/usr/bin/env -S make --no-builtin-rules --warn-undefined-variables --makefile
 
-CONTAINER_ROOT := /root/pytorch
+CONTAINER_ROOT := /home/torchdev
 MAKEFILE_ROOT  := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 
 .PHONY: info
@@ -18,7 +18,7 @@ setup:
 
 .PHONY: torchdev
 torchdev: torchdev/Dockerfile
-	docker build --tag $@ $@
+	docker build --build-arg UID=$(shell id -u) --build-arg GID=$(shell id -g) --tag $@ $@
 
 .PHONY: start
 start: RELATIVE_CURDIR  := $(shell realpath --relative-to $(MAKEFILE_ROOT) $(CURDIR))
@@ -29,19 +29,12 @@ start:
 	docker exec --workdir $(CONTAINER_CURDIR) -it $(DOCKER_CONTAINER) bash 2>/dev/null || \
 	docker run --privileged --rm -it --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 --volume $(MAKEFILE_ROOT):$(CONTAINER_ROOT) --workdir $(CONTAINER_CURDIR) --name $(DOCKER_CONTAINER) $(DOCKER_IMAGE)
 
-.PHONY: edit
-edit: EDITOR ?= vim
-edit:
-	$(EDITOR) $(MAKEFILE_LIST)
-
 #===================================================================================
 
 export CC:=clang
 export CXX:=clang++
 export CXXFLAGS:=-Wfatal-errors
 
-export CCACHE_DIR        := $(MAKEFILE_ROOT)/cache/ccache
-export CCACHE_TEMPDIR    := $(MAKEFILE_ROOT)/tmp/ccache
 export CCACHE_MAXSIZE    := 100G
 export CCACHE_NOHASHDIR  := 1
 export CCACHE_BASEDIR    := $(CURDIR)
