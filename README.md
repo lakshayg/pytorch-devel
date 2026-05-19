@@ -27,7 +27,8 @@ uv run python <script>
 
 ```
 pytorch-devel
-|_ Dockerfile
+|_ torchdev
+|  |_ Dockerfile
 |_ Makefile
 |_ 1            # main pytorch worktree (make setup)
 |_ ...          # any additional worktrees (create manually if needed)

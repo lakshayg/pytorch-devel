@@ -31,8 +31,9 @@ start:
 
 #===================================================================================
 
-export CC:=clang
-export CXX:=clang++
+export CC:=gcc
+export CXX:=g++
+export CFLAGS:=-Wfatal-errors
 export CXXFLAGS:=-Wfatal-errors
 
 export CCACHE_MAXSIZE    := 100G
@@ -51,6 +52,7 @@ build-%: export CMAKE_BUILD_TYPE?=RelWithDebInfo
 # Keep all intermediate files generated during cuda compilation
 # build-%: export CMAKE_CUDA_FLAGS:=--keep
 
+build-%: export USE_CUDNN?=0
 build-%: export USE_NUMA?=0
 build-%: export USE_XCCL?=0
 build-%: export USE_MSLK?=0
@@ -66,6 +68,7 @@ build-%: export TORCH_CUDA_ARCH_LIST?=$(shell nvidia-smi --query-gpu=compute_cap
 build-%: export BUILD_TEST?=0
 build-%: export BUILD_BINARY?=0
 build-%: export BUILD_FUNCTORCH?=1
+build-%: export USE_FBGEMM_GENAI?=0
 
 build-aarch64: export USE_PRIORITIZED_TEXT_FOR_LD?=1
 build-x86_64:  export CMAKE_LINKER_TYPE:=MOLD
