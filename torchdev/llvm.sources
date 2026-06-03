@@ -1,0 +1,7 @@
+# wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+# cp ../torchdev/llvm.sources /etc/apt/sources.list.d/llvm.sources
+Types: deb deb-src
+URIs: http://apt.llvm.org/noble/
+Suites: llvm-toolchain-noble-21
+Components: main
+Signed-By: /etc/apt/trusted.gpg.d/apt.llvm.org.asc

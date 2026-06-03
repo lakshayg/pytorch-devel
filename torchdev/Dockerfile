@@ -20,8 +20,13 @@ RUN curl -fL ${LINUX_REMOTE_ARCHIVE} | tar xzf - && \
 FROM ${BASE_IMAGE}
 
 ARG GCC_PKGS="gcc-14 g++-14 gdb"
-ARG CLANG_PKGS="clang-20 lldb-20 bolt-20 llvm-20"
+ARG CLANG_PKGS="clang-21 lldb-21 bolt-21 llvm-21"
 ARG TORCH_BUILD_DEPS="git mold ccache libssl-dev libopenblas-dev"
+
+# Add the apt.llvm.org repository for the LLVM 21 toolchain
+ADD --chmod=0644 https://apt.llvm.org/llvm-snapshot.gpg.key /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+COPY llvm.sources /etc/apt/sources.list.d/llvm.sources
+
 RUN DEBIAN_FRONTEND=noninteractive apt-get update &&                                    \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends           \
         sudo ${GCC_PKGS} ${CLANG_PKGS} ${TORCH_BUILD_DEPS} ${PERF_RUNTIME_DEPS}      && \
@@ -29,12 +34,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update &&                            
     update-alternatives --install /usr/bin/c++       c++       $(which g++-14)   1   && \
     update-alternatives --install /usr/bin/gcc       gcc       $(which gcc-14)   1      \
                         --slave   /usr/bin/g++       g++       $(which g++-14)       && \
-    update-alternatives --install /usr/bin/clang     clang     $(which clang-20) 1      \
-                        --slave   /usr/bin/clang++   clang++   $(which clang++-20)      \
-                        --slave   /usr/bin/lldb      lldb      $(which lldb-20)         \
-                        --slave   /usr/bin/clang-cpp clang-cpp $(which clang-cpp-20)    \
-                        --slave   /usr/bin/llvm-bolt llvm-bolt $(which llvm-bolt-20)    \
-                        --slave   /usr/bin/llvm-nm   llvm-nm   $(which llvm-nm-20)   && \
+    update-alternatives --install /usr/bin/clang     clang     $(which clang-21) 1      \
+                        --slave   /usr/bin/clang++   clang++   $(which clang++-21)      \
+                        --slave   /usr/bin/lldb      lldb      $(which lldb-21)         \
+                        --slave   /usr/bin/clang-cpp clang-cpp $(which clang-cpp-21)    \
+                        --slave   /usr/bin/llvm-bolt llvm-bolt $(which llvm-bolt-21)    \
+                        --slave   /usr/bin/llvm-nm   llvm-nm   $(which llvm-nm-21)   && \
     git config --global safe.directory '*'
 
 COPY --from=rust-tools /usr/local/cargo/bin/flamegraph /usr/bin/
