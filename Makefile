@@ -22,12 +22,16 @@ torchdev: torchdev/Dockerfile
 
 .PHONY: start
 start: RELATIVE_CURDIR  := $(shell realpath --relative-to $(MAKEFILE_ROOT) $(CURDIR))
-start: CONTAINER_CURDIR := $(CONTAINER_ROOT)/$(RELATIVE_CURDIR)
+start: CONTAINER_CURDIR := $(shell realpath --canonicalize-missing "$(CONTAINER_ROOT)/$(RELATIVE_CURDIR)")
 start: DOCKER_IMAGE     ?= torchdev
 start: DOCKER_CONTAINER := docker_$(firstword $(shell echo -n "$(DOCKER_IMAGE)" | md5sum))
 start:
 	docker exec --workdir $(CONTAINER_CURDIR) -it $(DOCKER_CONTAINER) bash 2>/dev/null || \
-	docker run --privileged --rm -it --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=-1 --volume $(MAKEFILE_ROOT):$(CONTAINER_ROOT) --workdir $(CONTAINER_CURDIR) --name $(DOCKER_CONTAINER) $(DOCKER_IMAGE)
+	docker run --privileged --rm -it \
+		--gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=-1 \
+		--volume $(MAKEFILE_ROOT):$(CONTAINER_ROOT) \
+		--workdir $(CONTAINER_CURDIR) \
+		--name $(DOCKER_CONTAINER) $(DOCKER_IMAGE)
 
 #===================================================================================
 
