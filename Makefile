@@ -41,8 +41,6 @@ export CCACHE_NOHASHDIR  := 1
 export CCACHE_BASEDIR    := $(CURDIR)
 export CCACHE_SLOPPINESS := pch_defines,time_macros
 
-export UV_PYTHON_DOWNLOADS := never
-
 .PHONY: build-%
 build-%: export CMAKE_SUPPRESS_DEVELOPER_WARNINGS:=ON
 build-%: export CMAKE_POLICY_VERSION_MINIMUM:=3.5
