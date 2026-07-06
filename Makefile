@@ -71,6 +71,7 @@ build-%: export BUILD_TEST?=0
 build-%: export BUILD_BINARY?=0
 build-%: export BUILD_FUNCTORCH?=1
 build-%: export USE_FBGEMM_GENAI?=0
+build-%: export USE_SYSTEM_NCCL?=1
 
 build-aarch64: export USE_PRIORITIZED_TEXT_FOR_LD?=1
 build-x86_64:  export CMAKE_LINKER_TYPE:=MOLD
