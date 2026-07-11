@@ -19,7 +19,7 @@ RUN curl -fL ${LINUX_REMOTE_ARCHIVE} | tar xzf - && \
 
 FROM ${BASE_IMAGE}
 
-ARG GCC_PKGS="gcc-14 g++-14 gdb"
+ARG GCC_PKGS="gcc-14 g++-14 gdb ninja-build"
 ARG CLANG_PKGS="clang-21 lldb-21 bolt-21 llvm-21 python3-dev"
 ARG TORCH_BUILD_DEPS="git mold ccache libssl-dev libopenblas-dev"
 

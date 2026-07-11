@@ -50,6 +50,7 @@ build-%: export CMAKE_SUPPRESS_DEVELOPER_WARNINGS:=ON
 build-%: export CMAKE_POLICY_VERSION_MINIMUM:=3.5
 build-%: export CMAKE_CUDA_HOST_COMPILER:=$(CC)
 build-%: export CMAKE_BUILD_TYPE?=RelWithDebInfo
+build-%: export CMAKE_GENERATOR?=Ninja
 # build-%: export CMAKE_COMPILE_WARNING_AS_ERROR:=ON
 # Keep all intermediate files generated during cuda compilation
 # build-%: export CMAKE_CUDA_FLAGS:=--keep
