@@ -13,8 +13,45 @@ git:
 	git rev-parse --is-inside-work-tree 2>&1 >/dev/null || git -C $(WORKTREE_MAIN) worktree repair $(CURDIR)
 
 .PHONY: setup
-setup:
-	git clone --recursive https://github.com/pytorch/pytorch 1
+setup: setup1 setup2 setup3 setup4 setup5
+	true
+
+.PHONY: setup1
+setup1:
+	git clone --recursive -b pytorch-build-test/1 https://github.com/lakshayg/pytorch 1
+.PHONY: setup2
+setup2:
+	git clone --recursive -b pytorch-build-test/2 https://github.com/lakshayg/pytorch 2
+.PHONY: setup3
+setup3:
+	git clone --recursive -b pytorch-build-test/3 https://github.com/lakshayg/pytorch 3
+.PHONY: setup4
+setup4:
+	git clone --recursive -b pytorch-build-test/4 https://github.com/lakshayg/pytorch 4
+.PHONY: setup5
+setup5:
+	git clone --recursive -b pytorch-build-test/5 https://github.com/lakshayg/pytorch 5
+
+.PHONY: experiment
+experiment:
+	mkdir -p results/1 results/2 results/3 results/4 results/5
+	cd 1; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/1/build-1.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/1/; git clean -fdx
+	cd 2; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/2/build-1.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/2/; git clean -fdx
+	cd 3; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/3/build-1.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/3/; git clean -fdx
+	cd 4; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/4/build-1.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/4/; git clean -fdx
+	cd 5; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/5/build-1.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/5/; git clean -fdx
+	true
+	cd 1; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/1/build-2.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/1/; git clean -fdx
+	cd 2; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/2/build-2.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/2/; git clean -fdx
+	cd 3; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/3/build-2.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/3/; git clean -fdx
+	cd 4; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/4/build-2.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/4/; git clean -fdx
+	cd 5; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/5/build-2.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/5/; git clean -fdx
+	true
+	cd 1; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/1/build-3.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/1/; git clean -fdx
+	cd 2; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/2/build-3.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/2/; git clean -fdx
+	cd 3; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/3/build-3.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/3/; git clean -fdx
+	cd 4; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/4/build-3.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/4/; git clean -fdx
+	cd 5; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/5/build-3.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/5/; git clean -fdx
 
 .PHONY: torchdev
 torchdev: torchdev/Dockerfile
@@ -40,10 +77,9 @@ export CXX:=g++
 export CFLAGS:=-Wfatal-errors
 export CXXFLAGS:=-Wfatal-errors
 
-export CCACHE_MAXSIZE    := 100G
-export CCACHE_NOHASHDIR  := 1
-export CCACHE_BASEDIR    := $(CURDIR)
-export CCACHE_SLOPPINESS := pch_defines,time_macros
+export CUDA_CACHE_DISABLE := 1
+
+export CCACHE_DISABLE := 1
 
 .PHONY: build-%
 build-%: export CMAKE_SUPPRESS_DEVELOPER_WARNINGS:=ON
@@ -78,10 +114,8 @@ build-%: export CMAKE_LINKER_TYPE:=LLD
 build-aarch64: export USE_PRIORITIZED_TEXT_FOR_LD?=1
 
 build-%: git
-	ccache --zero-stats
 	uv sync --no-install-project
 	uv sync --no-build-isolation --reinstall-package torch --verbose
-	ccache --show-stats
 
 .PHONY: build
 build: build-$(shell arch)

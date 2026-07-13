@@ -25,7 +25,7 @@ COPY llvm.sources /etc/apt/sources.list.d/llvm.sources
 
 ARG GCC_PKGS="gcc-14 g++-14 gdb ninja-build"
 ARG CLANG_PKGS="clang-21 lldb-21 bolt-21 llvm-21 lld-21 python3-dev"
-ARG TORCH_BUILD_DEPS="git ccache libssl-dev libopenblas-dev"
+ARG TORCH_BUILD_DEPS="git libssl-dev libopenblas-dev"
 RUN DEBIAN_FRONTEND=noninteractive apt-get update &&                                    \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends           \
         sudo ${GCC_PKGS} ${CLANG_PKGS} ${TORCH_BUILD_DEPS} ${PERF_RUNTIME_DEPS}
@@ -47,18 +47,7 @@ RUN git config --global safe.directory '*'                                      
                         --slave   /usr/bin/llvm-bolt llvm-bolt $(which llvm-bolt-21)    \
                         --slave   /usr/bin/llvm-nm   llvm-nm   $(which llvm-nm-21)
 
-COPY --from=rust-tools /usr/local/cargo/bin/flamegraph /usr/bin/
-COPY --from=rust-tools /usr/local/cargo/bin/addr2line  /usr/bin/
-COPY --from=perf-build /usr/bin/perf                   /usr/bin/
 COPY --from=ghcr.io/astral-sh/uv /uv /uvx              /usr/bin/
-
-ARG UID
-ARG GID
-RUN groupadd -g $GID torchdev           && \
-    useradd -u $UID -g $GID -m torchdev && \
-    adduser torchdev sudo               && \
-    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-USER torchdev
 
 ENV UV_LINK_MODE=copy \
     EDITOR=vim
