@@ -13,45 +13,33 @@ git:
 	git rev-parse --is-inside-work-tree 2>&1 >/dev/null || git -C $(WORKTREE_MAIN) worktree repair $(CURDIR)
 
 .PHONY: setup
-setup: setup1 setup2 setup3 setup4 setup5
-	true
-
-.PHONY: setup1
-setup1:
+setup:
 	git clone --recursive -b pytorch-build-test/1 https://github.com/lakshayg/pytorch 1
-.PHONY: setup2
-setup2:
-	git clone --recursive -b pytorch-build-test/2 https://github.com/lakshayg/pytorch 2
-.PHONY: setup3
-setup3:
-	git clone --recursive -b pytorch-build-test/3 https://github.com/lakshayg/pytorch 3
-.PHONY: setup4
-setup4:
-	git clone --recursive -b pytorch-build-test/4 https://github.com/lakshayg/pytorch 4
-.PHONY: setup5
-setup5:
-	git clone --recursive -b pytorch-build-test/5 https://github.com/lakshayg/pytorch 5
+	git -C 1 worktree add ../2 pytorch-build-test/2; git -C 2 submodule update --init --recursive
+	git -C 1 worktree add ../3 pytorch-build-test/3; git -C 3 submodule update --init --recursive
+	git -C 1 worktree add ../4 pytorch-build-test/4; git -C 4 submodule update --init --recursive
+	git -C 1 worktree add ../5 pytorch-build-test/5; git -C 5 submodule update --init --recursive
 
 .PHONY: experiment
 experiment:
 	mkdir -p results/1 results/2 results/3 results/4 results/5
-	cd 1; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/1/build-1.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/1/; git clean -fdx
+	# cd 1; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/1/build-1.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/1/; git clean -fdx
 	cd 2; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/2/build-1.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/2/; git clean -fdx
-	cd 3; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/3/build-1.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/3/; git clean -fdx
+	# cd 3; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/3/build-1.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/3/; git clean -fdx
 	cd 4; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/4/build-1.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/4/; git clean -fdx
-	cd 5; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/5/build-1.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/5/; git clean -fdx
+	# cd 5; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/5/build-1.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/5/; git clean -fdx
 	true
-	cd 1; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/1/build-2.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/1/; git clean -fdx
+	# cd 1; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/1/build-2.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/1/; git clean -fdx
 	cd 2; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/2/build-2.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/2/; git clean -fdx
-	cd 3; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/3/build-2.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/3/; git clean -fdx
+	# cd 3; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/3/build-2.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/3/; git clean -fdx
 	cd 4; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/4/build-2.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/4/; git clean -fdx
-	cd 5; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/5/build-2.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/5/; git clean -fdx
+	# cd 5; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/5/build-2.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/5/; git clean -fdx
 	true
-	cd 1; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/1/build-3.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/1/; git clean -fdx
+	# cd 1; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/1/build-3.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/1/; git clean -fdx
 	cd 2; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/2/build-3.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/2/; git clean -fdx
-	cd 3; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/3/build-3.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/3/; git clean -fdx
+	# cd 3; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/3/build-3.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/3/; git clean -fdx
 	cd 4; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/4/build-3.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/4/; git clean -fdx
-	cd 5; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/5/build-3.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/5/; git clean -fdx
+	# cd 5; ../Makefile build 2>&1 | tee build.txt; cp build.txt ../results/5/build-3.txt; cp build/.cmake/instrumentation/v1/data/trace/* ../results/5/; git clean -fdx
 
 .PHONY: torchdev
 torchdev: torchdev/Dockerfile
@@ -110,8 +98,7 @@ build-%: export BUILD_FUNCTORCH?=1
 build-%: export USE_FBGEMM_GENAI?=0
 build-%: export USE_SYSTEM_NCCL?=1
 build-%: export CMAKE_LINKER_TYPE:=LLD
-
-build-aarch64: export USE_PRIORITIZED_TEXT_FOR_LD?=1
+build-%: export USE_PRIORITIZED_TEXT_FOR_LD:=0
 
 build-%: git
 	uv sync --no-install-project
