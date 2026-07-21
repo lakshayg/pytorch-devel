@@ -46,6 +46,7 @@ export CCACHE_BASEDIR    := $(CURDIR)
 export CCACHE_SLOPPINESS := pch_defines,time_macros
 
 .PHONY: build-%
+build-%: export SKBUILD_LOGGING_LEVEL?=INFO
 build-%: export CMAKE_SUPPRESS_DEVELOPER_WARNINGS:=ON
 build-%: export CMAKE_POLICY_VERSION_MINIMUM:=3.5
 build-%: export CMAKE_CUDA_HOST_COMPILER:=$(CC)
@@ -80,7 +81,7 @@ build-aarch64: export USE_PRIORITIZED_TEXT_FOR_LD?=1
 build-%: git
 	ccache --zero-stats
 	uv sync --no-install-project
-	uv sync --no-build-isolation --reinstall-package torch --verbose
+	uv sync --no-build-isolation --reinstall-package torch --verbose -C editable.rebuild-dir=build/_editable_install
 	ccache --show-stats
 
 .PHONY: build
