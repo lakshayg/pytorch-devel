@@ -94,7 +94,7 @@ lint: git
 
 .PHONY: clean
 clean: git
-	git clean -fdx -e tags
+	git clean -fdx -e tags -e .venv
 
 .PHONY: tags
 tags: TMPFILE:=$(shell mktemp --tmpdir rgconfig.XXXXXX)

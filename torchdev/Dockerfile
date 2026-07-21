@@ -31,6 +31,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update &&                            
         sudo ${GCC_PKGS} ${CLANG_PKGS} ${TORCH_BUILD_DEPS} ${PERF_RUNTIME_DEPS}
 
 RUN git config --global safe.directory '*'                                           && \
+    update-alternatives --install /usr/bin/python    python    $(which python3)  1   && \
     update-alternatives --install /usr/bin/cc        cc        $(which gcc-14)   1   && \
     update-alternatives --install /usr/bin/c++       c++       $(which g++-14)   1   && \
     update-alternatives --install /usr/bin/gcc       gcc       $(which gcc-14)   1      \
