@@ -23,12 +23,14 @@ FROM ${BASE_IMAGE}
 ADD --chmod=0644 https://apt.llvm.org/llvm-snapshot.gpg.key /etc/apt/trusted.gpg.d/apt.llvm.org.asc
 COPY llvm.sources /etc/apt/sources.list.d/llvm.sources
 
+ARG PYTHON_PKGS="python3-dev python3-venv"
 ARG GCC_PKGS="gcc-14 g++-14 gdb ninja-build"
-ARG CLANG_PKGS="clang-21 lldb-21 bolt-21 llvm-21 lld-21 python3-dev"
+ARG CLANG_PKGS="clang-21 lldb-21 bolt-21 llvm-21 lld-21"
 ARG TORCH_BUILD_DEPS="git ccache libssl-dev libopenblas-dev"
-RUN DEBIAN_FRONTEND=noninteractive apt-get update &&                                    \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends           \
-        sudo ${GCC_PKGS} ${CLANG_PKGS} ${TORCH_BUILD_DEPS} ${PERF_RUNTIME_DEPS}
+RUN DEBIAN_FRONTEND=noninteractive apt-get update &&  \
+    apt-get install -y --no-install-recommends        \
+        sudo ${PYTHON_PKGS} ${GCC_PKGS} ${CLANG_PKGS} \
+        ${TORCH_BUILD_DEPS} ${PERF_RUNTIME_DEPS}
 
 RUN git config --global safe.directory '*'                                           && \
     update-alternatives --install /usr/bin/python    python    $(which python3)  1   && \
@@ -50,7 +52,6 @@ RUN git config --global safe.directory '*'                                      
 COPY --from=rust-tools /usr/local/cargo/bin/flamegraph /usr/bin/
 COPY --from=rust-tools /usr/local/cargo/bin/addr2line  /usr/bin/
 COPY --from=perf-build /usr/bin/perf                   /usr/bin/
-COPY --from=ghcr.io/astral-sh/uv /uv /uvx              /usr/bin/
 
 ARG UID
 ARG GID

@@ -45,13 +45,18 @@ export CCACHE_NOHASHDIR  := 1
 export CCACHE_BASEDIR    := $(CURDIR)
 export CCACHE_SLOPPINESS := pch_defines,time_macros
 
+.venv: requirements.txt requirements-build.txt
+	python -m venv $@
+	$@/bin/pip install -r requirements.txt -r requirements-build.txt
+
 .PHONY: build-%
 build-%: export SKBUILD_LOGGING_LEVEL?=INFO
 build-%: export CMAKE_SUPPRESS_DEVELOPER_WARNINGS:=ON
 build-%: export CMAKE_POLICY_VERSION_MINIMUM:=3.5
 build-%: export CMAKE_CUDA_HOST_COMPILER:=$(CC)
-build-%: export CMAKE_BUILD_TYPE?=RelWithDebInfo
+build-%: export CMAKE_BUILD_TYPE?=Release
 build-%: export CMAKE_GENERATOR?=Ninja
+build-%: export CMAKE_PREFIX_PATH?=$(PWD)/.venv
 # build-%: export CMAKE_COMPILE_WARNING_AS_ERROR:=ON
 # Keep all intermediate files generated during cuda compilation
 # build-%: export CMAKE_CUDA_FLAGS:=--keep
@@ -74,27 +79,25 @@ build-%: export BUILD_BINARY?=0
 build-%: export BUILD_FUNCTORCH?=1
 build-%: export USE_FBGEMM_GENAI?=0
 build-%: export USE_SYSTEM_NCCL?=1
-build-%: export CMAKE_LINKER_TYPE:=LLD
+build-%: export CMAKE_LINKER_TYPE?=LLD
 
 build-aarch64: export USE_PRIORITIZED_TEXT_FOR_LD?=1
 
-build-%: git
+build-%: git | .venv
 	ccache --zero-stats
-	uv sync --no-install-project
-	uv sync --no-build-isolation --reinstall-package torch --verbose -C editable.rebuild-dir=build/_editable_install
+	.venv/bin/spin develop
 	ccache --show-stats
 
 .PHONY: build
 build: build-$(shell arch)
 
 .PHONY: lint
-lint: git
-	uv run --only-dev lintrunner init
-	uv run --only-dev lintrunner lint --apply-patches
+lint: git | .venv
+	.venv/bin/spin quickfix
 
 .PHONY: clean
 clean: git
-	git clean -fdx -e tags -e .venv
+	git clean -fdx -e tags -e .venv -e .jj
 
 .PHONY: tags
 tags: TMPFILE:=$(shell mktemp --tmpdir rgconfig.XXXXXX)
@@ -112,7 +115,7 @@ shell python: export TORCH_SYMBOLIZE_MODE?=$(word 1, fast dladdr addr2line)
 
 shell: export HISTFILE:=$(CONTAINER_ROOT)/cache/.torch_shell_history
 shell:
-	bash --rcfile $(CURDIR)/.venv/bin/activate -i
+	bash --rcfile .venv/bin/activate -i
 
-python:
-	uv run --with ipython ipython -i -c "import torch"
+python: | .venv
+	.venv/bin/python -i -c "import torch"
