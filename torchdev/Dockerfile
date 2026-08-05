@@ -61,5 +61,4 @@ RUN groupadd -g $GID torchdev           && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER torchdev
 
-ENV UV_LINK_MODE=copy \
-    EDITOR=vim
+ENV EDITOR=vim
