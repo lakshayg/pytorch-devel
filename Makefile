@@ -93,7 +93,7 @@ build: build-$(shell arch)
 
 .PHONY: lint
 lint: git | .venv
-	.venv/bin/spin quickfix
+	bash -c 'source .venv/bin/activate; .venv/bin/spin quickfix'
 
 .PHONY: clean
 clean: git
