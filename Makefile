@@ -82,10 +82,12 @@ build-%: export USE_SYSTEM_NCCL?=1
 build-%: export CMAKE_LINKER_TYPE?=LLD
 
 build-aarch64: export USE_PRIORITIZED_TEXT_FOR_LD?=1
+build-%: export USE_CMAKE_INSTRUMENTATION?=1
+build-%: export USE_RELATIVE_PATHS?=1
 
 build-%: git | .venv
 	ccache --zero-stats
-	.venv/bin/spin develop
+	bash -c 'source .venv/bin/activate; spin develop'
 	ccache --show-stats
 
 .PHONY: build
@@ -93,7 +95,7 @@ build: build-$(shell arch)
 
 .PHONY: lint
 lint: git | .venv
-	bash -c 'source .venv/bin/activate; .venv/bin/spin quickfix'
+	bash -c 'source .venv/bin/activate; spin quickfix'
 
 .PHONY: clean
 clean: git
@@ -118,4 +120,4 @@ shell:
 	bash --rcfile .venv/bin/activate -i
 
 python: | .venv
-	.venv/bin/python -i -c "import torch"
+	bash -c 'source .venv/bin/activate; python -i -c "import torch"'
