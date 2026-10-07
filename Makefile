@@ -89,7 +89,7 @@ build-%: export TORCH_NATIVE_AOT?=0
 
 build-%: git | .venv
 	ccache --zero-stats
-	bash -c 'source .venv/bin/activate; spin develop'
+	. .venv/bin/activate && spin develop
 	ccache --show-stats
 
 .PHONY: build
@@ -97,7 +97,7 @@ build: build-$(shell arch)
 
 .PHONY: lint
 lint: git | .venv
-	bash -c 'source .venv/bin/activate; spin quickfix'
+	. .venv/bin/activate && spin quickfix
 
 .PHONY: clean
 clean: git
