@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=nvcr.io/nvidia/cuda-dl-base:26.04-cuda13.2-devel-ubuntu24.04
+ARG BASE_IMAGE=nvcr.io/nvidia/cuda-dl-base:26.05-cuda13.2-devel-ubuntu24.04
 
 FROM rust AS rust-tools
 RUN cargo install flamegraph && cargo install addr2line --features="bin"
