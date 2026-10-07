@@ -47,7 +47,8 @@ export CCACHE_SLOPPINESS := pch_defines,time_macros
 
 .venv: requirements.txt requirements-build.txt
 	python -m venv $@
-	$@/bin/pip install -r requirements.txt -r requirements-build.txt
+	$@/bin/pip install $(addprefix -r ,$^)
+	$@/bin/pip install tabulate==0.9.0
 
 .PHONY: build-%
 build-%: export SKBUILD_LOGGING_LEVEL?=INFO
