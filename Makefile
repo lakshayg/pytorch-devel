@@ -87,7 +87,7 @@ build-%: export USE_CMAKE_INSTRUMENTATION?=1
 build-%: export USE_RELATIVE_PATHS?=1
 build-%: export TORCH_NATIVE_AOT?=0
 
-build-%: git | .venv
+build-%: | .venv
 	ccache --zero-stats
 	. .venv/bin/activate && spin develop
 	ccache --show-stats
@@ -96,11 +96,11 @@ build-%: git | .venv
 build: build-$(shell arch)
 
 .PHONY: lint
-lint: git | .venv
+lint: | .venv
 	. .venv/bin/activate && spin quickfix
 
 .PHONY: clean
-clean: git
+clean:
 	git clean -fdx -e tags -e .venv -e .jj
 
 .PHONY: tags
