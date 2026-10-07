@@ -85,6 +85,7 @@ build-%: export CMAKE_LINKER_TYPE?=LLD
 build-aarch64: export USE_PRIORITIZED_TEXT_FOR_LD?=1
 build-%: export USE_CMAKE_INSTRUMENTATION?=1
 build-%: export USE_RELATIVE_PATHS?=1
+build-%: export TORCH_NATIVE_AOT?=0
 
 build-%: git | .venv
 	ccache --zero-stats
