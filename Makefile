@@ -45,12 +45,9 @@ export CCACHE_NOHASHDIR  := 1
 export CCACHE_BASEDIR    := $(CURDIR)
 export CCACHE_SLOPPINESS := pch_defines,time_macros
 
-.venv: requirements.txt requirements-build.txt
+.venv: requirements.txt requirements-build.txt $(MAKEFILE_ROOT)/requirements.txt
 	python -m venv $@
 	$@/bin/pip install $(addprefix -r ,$^)
-	$@/bin/pip install 'cupti-python>=13.5'
-	$@/bin/pip install triton
-	$@/bin/pip apache-tvm-ffi nvidia-cutlass-dsl[cu13]
 
 .PHONY: build-%
 build-%: export SKBUILD_LOGGING_LEVEL?=INFO
@@ -89,7 +86,7 @@ build-%: export USE_CMAKE_INSTRUMENTATION?=1
 build-%: export USE_RELATIVE_PATHS?=1
 build-%: export TORCH_NATIVE_AOT?=1
 
-build-%: | .venv
+build-%: .venv
 	ccache --zero-stats
 	. .venv/bin/activate && spin develop
 	ccache --show-stats
@@ -98,7 +95,7 @@ build-%: | .venv
 build: build-$(shell arch)
 
 .PHONY: lint
-lint: | .venv
+lint: .venv
 	. .venv/bin/activate && spin quickfix
 
 .PHONY: clean
@@ -123,5 +120,5 @@ shell: export HISTFILE:=$(CONTAINER_ROOT)/cache/.torch_shell_history
 shell:
 	bash --rcfile .venv/bin/activate -i
 
-python: | .venv
+python: .venv
 	bash -c 'source .venv/bin/activate; python -i -c "import torch"'

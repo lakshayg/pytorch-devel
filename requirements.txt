@@ -1,0 +1,4 @@
+cupti-python>13.0
+triton
+apache-tvm-ffi
+nvidia-cutlass-dsl[cu13]
