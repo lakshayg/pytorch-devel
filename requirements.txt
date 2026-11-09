@@ -1,4 +1,10 @@
+# deps for cuspy
 cupti-python>13.0
+libclang
+
+# deps for torch.compile and flop counting
 triton
+
+# deps for cutedsl
 apache-tvm-ffi
 nvidia-cutlass-dsl[cu13]
