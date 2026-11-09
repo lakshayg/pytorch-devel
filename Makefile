@@ -48,7 +48,9 @@ export CCACHE_SLOPPINESS := pch_defines,time_macros
 .venv: requirements.txt requirements-build.txt
 	python -m venv $@
 	$@/bin/pip install $(addprefix -r ,$^)
-	$@/bin/pip install tabulate==0.9.0
+	$@/bin/pip install 'cupti-python>=13.5'
+	$@/bin/pip install triton
+	$@/bin/pip apache-tvm-ffi nvidia-cutlass-dsl[cu13]
 
 .PHONY: build-%
 build-%: export SKBUILD_LOGGING_LEVEL?=INFO
@@ -85,7 +87,7 @@ build-%: export CMAKE_LINKER_TYPE?=LLD
 build-aarch64: export USE_PRIORITIZED_TEXT_FOR_LD?=1
 build-%: export USE_CMAKE_INSTRUMENTATION?=1
 build-%: export USE_RELATIVE_PATHS?=1
-build-%: export TORCH_NATIVE_AOT?=0
+build-%: export TORCH_NATIVE_AOT?=1
 
 build-%: | .venv
 	ccache --zero-stats
