@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=nvcr.io/nvidia/cuda-dl-base:26.05-cuda13.2-devel-ubuntu24.04
+ARG BASE_IMAGE=nvcr.io/nvidia/cuda-dl-base:26.10-cuda13.4-devel-ubuntu24.04
 
 FROM rust AS rust-tools
 RUN cargo install flamegraph && cargo install addr2line --features="bin"
@@ -24,7 +24,7 @@ ADD --chmod=0644 https://apt.llvm.org/llvm-snapshot.gpg.key /etc/apt/trusted.gpg
 COPY llvm.sources /etc/apt/sources.list.d/llvm.sources
 
 ARG PYTHON_PKGS="python3-dev python3-venv"
-ARG GCC_PKGS="gcc-14 g++-14 gdb ninja-build"
+ARG GCC_PKGS="gcc-13 g++-13 gdb ninja-build"
 ARG CLANG_PKGS="clang-21 lldb-21 bolt-21 llvm-21 lld-21"
 ARG TORCH_BUILD_DEPS="git ccache libssl-dev libopenblas-dev"
 RUN DEBIAN_FRONTEND=noninteractive apt-get update &&  \
@@ -34,10 +34,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update &&  \
 
 RUN git config --global safe.directory '*'                                           && \
     update-alternatives --install /usr/bin/python    python    $(which python3)  1   && \
-    update-alternatives --install /usr/bin/cc        cc        $(which gcc-14)   1   && \
-    update-alternatives --install /usr/bin/c++       c++       $(which g++-14)   1   && \
-    update-alternatives --install /usr/bin/gcc       gcc       $(which gcc-14)   1      \
-                        --slave   /usr/bin/g++       g++       $(which g++-14)       && \
+    update-alternatives --install /usr/bin/cc        cc        $(which gcc-13)   1   && \
+    update-alternatives --install /usr/bin/c++       c++       $(which g++-13)   1   && \
+    update-alternatives --install /usr/bin/gcc       gcc       $(which gcc-13)   1      \
+                        --slave   /usr/bin/g++       g++       $(which g++-13)       && \
     update-alternatives --install /usr/bin/clang     clang     $(which clang-21) 1      \
                         --slave   /usr/bin/clang++   clang++   $(which clang++-21)      \
                         --slave   /usr/bin/lld       lld       $(which lld-21)          \

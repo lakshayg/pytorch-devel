@@ -63,7 +63,7 @@ build-%: export CMAKE_PREFIX_PATH?=$(PWD)/.venv
 
 build-%: export USE_CUDNN?=0
 build-%: export USE_NUMA?=0
-build-%: export USE_XCCL?=0
+build-%: export USE_XCCL:=OFF
 build-%: export USE_MSLK?=0
 build-%: export USE_MKLDNN?=0
 build-%: export USE_FBGEMM?=0
